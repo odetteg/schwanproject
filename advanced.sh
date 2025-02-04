@@ -9,7 +9,7 @@ map_dir="results/map"
 bam_log="results/logs/bam"
 mkdir -p "$bam_log"
 variants="results/variants"
-# In this workflow, we can refactory step 1 by simply storing the accession IDs
+# In this workflow, we can refactor step 1 by simply storing the accession IDs
 # In a external file then read it in our workflow and handle it as a list
 # We will store all accession IDs in the file SRR.Acc_List.txt
 
@@ -25,8 +25,8 @@ while IFS= read -r accession_id || [[ -n "$accession_id" ]];do
 accessions+=("$accession_id")
 done < "$accessions_list"
 
-# Let us unpack what is happenig. We are using the while loop, and invoking the read command. The 
-# Read command process the file line by line and assigns whatever is in each line to a variable "accession_id"
+# Let us unpack what is happening. We are using the while loop, and invoking the read command. The 
+# read command process the file line by line and assigns whatever is in each line to a variable "accession_id"
 # we are settig the IFS (internal field seperator) to empty.
 # This prevents read from trimming leading/trailing whitespace or splitting the input into multiple fields if spaces or tabs exist in the line.
 # Without setting IFS=, read would split lines on whitespace by default.
@@ -55,6 +55,7 @@ done
 echo "Runnning FASTP"
 
 # Just like we did for the fastqc, we will use a for loop to process the raw reads. FASTP will do both quality check and filtering. 
+# It will store for us a report in a html file
 # The report will show us what our files looked like before and after filtering
 mkdir -p "$fastp_dir"
 for fq_1 in "${data_dir}"/*_1.fastq;do
@@ -76,10 +77,10 @@ done
 
 # Step 3: indexing index genome and mapping the reads
 
-# The third step is often to index the reference genome, then mapp our reads to the indexed genome.
+# The third step is often to index the reference genome, then map our reads to the indexed genome.
 # We will download the reference genome using wget then invoke the bwa command
 wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.fna.gz
-# the -nc simply tells the wget command not to download it again if the file exist
+# the -nc simply tells the wget command not to download it again if the file exists
 
 bwa index "$ref"
 
@@ -141,6 +142,6 @@ done
 
 echo "variant calling completed..."
 
-# So based on what we have done above, we have developed a "workflow" that takes up to 8 files, and processing them in five steps.
-# Based on this simply workflow alone, we can process as many files as we want, using the same commands and with some level of ease. 
+# So based on what we have done above, we have developed a "workflow" that takes up to 8 files, and process them in five steps.
+# Based on this simple workflow alone, we can process as many files as we want, using the same commands and with some level of ease. 
 # You can simply run the entire workflow (see main.sh) and it will process all the files. 

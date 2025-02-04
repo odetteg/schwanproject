@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Prelimiary step: Seting up directorys
+# Prelimianry step: Setting up directories
 data_dir="data"
 fastqc_dir="results/fastqc"
 fastp_dir="results/fastp"
@@ -18,7 +18,7 @@ echo "downloading raw fastq files:"
 
 # fasterq-dump -S ERR246968 -O "$data_dir" # This command is simple. We are simply calling the fasterq-dump command,
 # telling it to download the file with the run ID ERR246968 and split it for us, give as both r1 and r2. 
-# We the ask it to store it in the data dir. We can do the same for all other remaining SRA IDs. 
+# We then ask it to store it in the data dir. We can do the same for all other remaining SRA IDs. 
 # I will be downloading and processing all eight files but urge you to may be just do this on two because of the 
 # Memory issues.
 
@@ -121,8 +121,8 @@ fastp \
 
 # Step 3: indexing index genome and mapping the reads
 
-# The third step is often to index the reference genome, then mapp our reads to the indexed genome.
-# We will downloa the reference genome using wget then invoke the bwa command
+# The third step is often to index the reference genome, then map our reads to the indexed genome.
+# We will download the reference genome using wget then invoke the bwa command
 wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.fna.gz
 # the -nc simply tells the wget command not to download it again if the file exist
 

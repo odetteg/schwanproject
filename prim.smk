@@ -1,40 +1,39 @@
 # We have just gone through how we can write a workflow joining five steps using bash
-# The probblem with that approach is that we fail to attain adaptability and transperency (see Molder et al.)
-# That is why we will turn to snakemake, which after we will see, it makes out work easier and allows us to be more robust
+# The problem with that approach is that we fail to attain adaptability and transparency (see Molder et al.)
+# That is why we will turn to snakemake, which after we will see, makes our work easier and allows us to be more robust
 
-# Caution: This tutorial is in no way the entirity of snakemake. I just want to pique your interest on the workflow
-# This means that you will (just like I do to date) constantly consult the snakemake documentation for more advanced features
+# This tutorial is in no way the whole syllabus you need about snakemake. I just want to pique your interest about the workflow
+# This means that you will (just like I do to all the time) constantly consult the snakemake documentation for more advanced features
 # See documentation at https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html
 
 # Some housekeeping
-# - File extensions are generally important in data analtysis and bioinformatics. In snakemake, we can use both .smk (we will use this constantly)
-# Or .snakemake. We can also use snakefile but we will see why the other extensions are better because we will reverse "snakefile" for a more
+# - File extensions are generally important in data analysis and bioinformatics. In snakemake, we can use both .smk (we will use this constantly)
+# Or .snakemake. We can also use snakefile but we will see why the other extensions are better because as we will "snakefile" for a more
 # important task
 # I will introduce the concept of a config file as early as now and we will see how important it is.
 # As you learn, type out the code in your own files and try and run.
 
 # Let's gooooo...
-# Start by creating a file, call it whatever name you want and end it with a .smk. In my case this will be
-# main.smk
-# Let us rewind a bit. In our bash workflow, we ran five steps that followed each other. And we needed to put them in the exact same
-# order so that one important step does not run before another prelliminary step (the pipeline would scream for errors).
-# In snakemake we will not care about this order. However, instead of refering to these are steps, we call them rules.
+# Start by creating a file, call it whatever name you want. Just ensure it ends with a .smk. In my case this will be main.smk
+# Let us rewind a bit. In our bash workflow, we ran five steps that built each other. And we needed to put them in the exact same
+# order so that one important step does not run before another preliminary step (the pipeline would scream for errors).
+# In snakemake we will not care about this order. However, instead of referring to these as steps, we call them rules.
 # So the step for downloading the data is simply a rule. We can call it rule download_files. Same to running fastqc and fastp. We can call these
 # rule fastqc and rule fastp respectively. So rules in snakemake are the steps or actions we run. 
 # In order to create a rule, we simply involve the name "rule" which is a snakemake functionality then give the rule a name.
 # In our case, the first rule would be to download our raw files, we we can simply do this:
 
 rule download_files:
-# under this rule, we can the describe whatever we want the rule to do for us. In our case, we simply want it to download for us 
-# fastq reads. An important, note, when working with rules, you must know beforehand what you want the rule to do for you, how 
-# you want the rule to perform the function, and what output you want after the rule has been run.
+# Under this rule, we can describe whatever we want it to do for us. In our case, we simply want it to download for us
+# fastq reads. An important note, when working with rules, you must know beforehand what you want the rule to do for you, 
+# how  you want the rule to perform the function, and what output you want after the rule has been run.
 # So the basic structure of a rule is always something like this:
 rule download_files:
     output:
     shell:
         """
         """
-# Here we have just defined the rule, stated that we expectd some output, and told snakemake that we will be running a shell script
+# Here we have just defined the rule, stated that we expect some output, and told snakemake that we will be running a shell script.
 # Let us populate the rule to see what we now have:
 
 rule download_files:
@@ -50,11 +49,13 @@ rule download_files:
 # note that I have specified the outputs in "" (double quotes, you can use single quotes) and separated them using a coma.
 # If you have multiple inputs, you will always separate them using a comma. The shell just contains the commands we want to run. You
 # Can see that we can even define our variables there.
-# Running snakemake is as easy as 
+# Running snakemake is as easy as:
+snakemake - snakefile test.smk - cores 8
+# Just call snakemake - snakefile then the name of the file and provide the cores
 
 # BUT remember, here we just downloaded one file. We want to work with many files. For this reason, we will shift to whatever we did with the advanced.sh
-# Before we go further, I want to introduce the concept of expand(). When we want to return many files, we can either list all files like we did in the first exame
-# or use the expand() function and simply supply the natures of files. expand() will make our code cleaner.
+# Before we go further, I want to introduce the concept of expand(). When we want to return many files, we can either list all files like we did in the first example or use the expand() function and simply supply the names of files. 
+# expand() will make our code cleaner.
 # How expand() works. expand("the/file/{any_pattern}.file_ext", any_pattern=["this pattern", "another_patter"])
 # Let us look at an example.
 # expand("data/{IDs}_{read}.fastq", read=["_1", "_2"], IDs=["ERR246968", "ERR246969"]). Expand will ideally return "data/ERR246969_1.fastq", 
@@ -292,13 +293,12 @@ rule variant_filter:
         bcftools filter -Ov -i "{params.vcf_filter}" -o "${{filtered_vcf}}" "${{vcf}}"
         done
         """
-# We maintan everything in this rule. However, I want you to take note of what is happening with the params this time.
-# The "{params.vcf_filter}" is now enclosed in double quotes, so Bash correctly passes it as a single argument to bcftools.
-# This prevents Bash from misinterpreting && as a shell logical operator.
+# In this rule, the input consists of the raw VCF files generated by the variant_call rule, and the output is the filtered VCF files. The filter is applied using bcftools filter, where the condition QUAL > 20 && DP > 10 is passed from the params.vcf_filter.
+# A key point to note:
+# The filter condition "{params.vcf_filter}" is enclosed in double quotes. This is important because it ensures that Bash passes the entire filter condition as a single argument to bcftools filter. 
+#Without the quotes, Bash could misinterpret the && as a logical operator, which could cause errors in the script.
 
-# Now we have finally finished our mini workshop. By no way have I given you all that is there to be know about snakemake. But I hope I have
-# piqued your interest to continue learning more using other materials. The snakemake documentation provides a good support so I would 
-# recommend that you check that out. Continue practicing on your own. I have included a test for you in the test.smk file to help you develop
-# a new workflow and publish in your github. I will be doing more of this tutorials in the future and if you are interested, hang with me in my 
-# socials. Also, if you have recommendations on what you want to learn or questions about what we have covered, you can write to me directlt through
-# my socials and email. Good luck.
+# We have finally wrapped up our mini workshop on Snakemake! While this guide certainly does not cover everything there is to know about Snakemake, I truly hope it has sparked your interest in exploring more. The Snakemake documentation is an excellent resource, and I highly recommend checking it out to expand your knowledge further.
+# As with anything, practice is key - so keep experimenting and building workflows on your own. I have included a test in the test.smk file to give you a challenge and help you develop a new workflow to publish on your GitHub.
+# I will be doing more tutorials like this in the future, so if you're interested, feel free to connect with me on my socials. If you have any specific recommendations for what you would like to learn next, or if you have any questions about what we have covered, don't hesitate to reach out to me through my socials or email.
+# Good luck, and keep building!
