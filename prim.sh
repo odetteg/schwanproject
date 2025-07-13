@@ -59,9 +59,9 @@ fastp \
 -j results/fastp/ERR246968.json  \
 -h results/fastp/ERR246968.html 
 
-Let us go throuhg what each command is doing. -i informs fastp about our read 1 input file, -o about our read 1 output file. 
-This applies to the -I and -O for read 2 as well. We then request fastp to give us a json file (to work well with multiqc) and a html file 
-Which will have our quality metrics
+# Let us go throuhg what each command is doing. -i informs fastp about our read 1 input file, -o about our read 1 output file. 
+# This applies to the -I and -O for read 2 as well. We then request fastp to give us a json file (to work well with multiqc) and a html file 
+# Which will have our quality metrics
 
 fastp \
 -i data/ERR246969_1.fastq \
